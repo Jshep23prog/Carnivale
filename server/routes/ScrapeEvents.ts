@@ -20,14 +20,13 @@ async function start(userDate: string) {
     const location = []; //holds gig location name
 
     //arrays to hold second wave of refinement
-    const day = []; //holds
+    const day = [];
     const act = [];
     const date = [];
-
     const time = [];
 
   //looping logic to separate data since the raw is such a mess
-  //first wave of refinement
+  //first wave of refinement split at the 14 space gap
   for (let i = 0; i < info.length; i++) {
     const iso = info[i].split('              ');
     infos.push(iso);
@@ -42,6 +41,7 @@ async function start(userDate: string) {
   act.push(iso[0]);
   day.push(iso[1].replace(/\s\s+/g, ' ').trim());
   }
+  //refine and seperate Date and time
   for (let i = 0; i < day.length; i++) {
     const splitDayTime = day[i].split(' at ');
     date.push(splitDayTime[0]);
@@ -51,7 +51,7 @@ async function start(userDate: string) {
     if (parsed < 1200) {
       parsed += 1200;
     }
-
+    //add colon and other half of hour post military time conversion
     const a = parsed.toString();
     const b = ':';
     const output = [a.slice(0, 2), b, a.slice(2)].join('');
@@ -63,7 +63,6 @@ async function start(userDate: string) {
   for (let i = 0; i < day.length; i++) {
     proper.push(dayjs(`${date[i]} 2024 ${time[i]}`).format('YYYY-MM-DDTHH:mm'));
   }
-
   //finally, array to hold individual objects to be added to db
   const mainArr = [];
   for (let i = 0; i < location.length; i++) { //or day.length
@@ -77,12 +76,9 @@ async function start(userDate: string) {
       address: `${location[i]} New Orleans`,
       link: url,
       system: true,
-      // invitees: [],
       invitedCount: 0,
       attendingCount: 0,
-      // imageUrl: null,
       upvotes: 0,
-      // ownerId: null
     });
   }
 
@@ -93,7 +89,7 @@ async function start(userDate: string) {
   }
 } catch (error) {
   throw new Error(
-    `Error scraping parade info for ${error}`
+    `Error scraping the parade info for ${error}`
   );
  }
 }
